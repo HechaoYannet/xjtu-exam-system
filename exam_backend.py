@@ -926,6 +926,13 @@ class ExamService:
         exam = self._resolve_exam(ticket)
         if not exam:
             return {"status": "invalid", "message": "当前没有进行中的考试"}
+        # 模拟模式：镜像前端自由考试，登录即自动开始
+        if self.store.get_mode() == "simulation" and exam.get("status") not in ("running", "ended"):
+            try:
+                self.store.start_exam(exam["id"])
+                exam = self.store.find_exam(exam["id"])
+            except ValueError:
+                pass
         assigned = candidate.get("exam_id") == exam["id"] or ticket in (exam.get("candidate_tickets") or [])
         if exam.get("candidate_tickets") and ticket not in exam["candidate_tickets"]:
             return {"status": "invalid", "message": "该考生未安排本场考试"}
