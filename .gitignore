@@ -4,3 +4,5 @@ data/
 *.tmp
 .DS_Store
 gh-pages/
+node_modules/
+.railway/
