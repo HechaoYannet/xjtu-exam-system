@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>考试机客户端</title>
+<style>
+* { box-sizing:border-box; }
+body { margin:0; font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif; background:#eef2f7; color:#0f172a; }
+.header { background:#1e3a8a; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:18px; margin:0; }
+.header .info { font-size:13px; opacity:.9; }
+.header-actions { display:flex; gap:8px; }
+.header-actions button { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); }
+.layout { display:flex; min-height:calc(100vh - 56px); }
+.main { flex:1; padding:20px; overflow:auto; }
+.sidebar { width:260px; background:#fff; border-left:2px solid #e2e8f0; padding:16px; overflow:auto; }
+.sidebar h3 { margin-top:0; }
+.card { background:#fff; border:1px solid #dbe2ea; border-radius:10px; padding:16px; margin-bottom:14px; }
+.timer { font-size:28px; font-weight:700; color:#dc2626; }
+.question { margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #eef2f7; }
+.option { display:block; margin:6px 0; padding:8px 10px; border:1px solid #dbe2ea; border-radius:8px; cursor:pointer; }
+.option:hover { background:#f8fafc; }
+.actions { margin-top:12px; display:flex; gap:8px; }
+button { font:inherit; padding:8px 14px; border:none; border-radius:8px; background:#2563eb; color:#fff; cursor:pointer; }
+button.secondary { background:#e2e8f0; color:#334155; }
+button.danger { background:#dc2626; }
+button:disabled { opacity:.6; cursor:not-allowed; }
+.big { padding:14px 24px; font-size:16px; }
+.center { max-width:520px; margin:80px auto; text-align:center; }
+.error { color:#dc2626; font-weight:600; margin-top:10px; }
+.info { color:#475569; }
+.badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#dbeafe; color:#1e40af; font-size:12px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>考试机客户端</h1>
+    <div class="info" id="headerInfo">本地后端控制 · 倒计时以后端为准</div>
+  </div>
+  <div class="header-actions">
+    <button class="secondary" id="refreshBtn" onclick="refreshNow()">刷新</button>
+    <button class="secondary" id="logoutBtn" onclick="logout()">退出登录</button>
+  </div>
+</div>
+<div id="app"></div>
+<script>
+const API='/api';
+let currentTicket=localStorage.getItem('exam_ticket')||'';
+let state=null;
+let pollTimer=null;
+let infoConfirmed=false;
+let onlineStatus='未连接';
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function req(path, method='GET', body){
+  const opt={method,headers:{'Content-Type':'application/json'}};
+  if(body!==undefined) opt.body=JSON.stringify(body);
+  const r=await fetch(API+path,opt);
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.message||'请求失败');
+  return data;
+}
+function renderLogin(){
+  document.getElementById('headerInfo').textContent='本地后端控制 · 倒计时以后端为准';
+  document.getElementById('app').innerHTML=`
+    <div class="center card">
+      <h2>请输入准考证号</h2>
+      <div class="info">模拟模式可自由登录；标准模式需后台已准备/开始本场考试。</div>
+      <input id="ticket" placeholder="准考证号" style="font-size:18px;padding:10px;width:80%;margin:16px 0" />
+      <div><button class="big" onclick="login()">登录 / 开始</button></div>
+      <div id="loginMsg" class="error"></div>
+    </div>`;
+  document.getElementById('ticket').focus();
+}
+async function login(){
+  const ticket=document.getElementById('ticket').value.trim();
+  await loginTicket(ticket);
+}
+async function loginTicket(ticket){
+  const msg=document.getElementById('loginMsg');
+  if(msg) msg.textContent='';
+  if(!ticket){ if(msg) msg.textContent='请输入准考证号'; return; }
+  try{
+    const res=await req('/exam-client/login','POST',{ticket});
+    if(!res.ok){
+      if(msg) msg.textContent=res.message||'登录失败';
+      return;
+    }
+    currentTicket=ticket;
+    localStorage.setItem('exam_ticket', ticket);
+    infoConfirmed=false;
+    onlineStatus='已连接';
+    state=res.state;
+    startPolling();
+    render();
+  }catch(e){ if(msg) msg.textContent=e.message; }
+}
+function logout(){
+  stopPolling();
+  currentTicket='';
+  infoConfirmed=false;
+  state=null;
+  localStorage.removeItem('exam_ticket');
+  onlineStatus='未连接';
+  renderLogin();
+}
+async function refreshNow(){
+  if(currentTicket){
+    try{
+      const res=await req('/exam-client/state?ticket='+encodeURIComponent(currentTicket));
+      if(res.ok){ state=res; onlineStatus='已连接'; render(); }
+      else { onlineStatus='未登录'; }
+    }catch(e){ onlineStatus='连接失败'; }
+  }
+}
+function confirmInfo(){
+  infoConfirmed=true;
+  render();
+}
+async function poll(){
+  if(!currentTicket) return;
+  try{
+    const res=await req('/exam-client/state?ticket='+encodeURIComponent(currentTicket));
+    if(res && res.ok){ state=res; render(); }
+    else if(res && !res.ok){ stopPolling(); renderLogin(); }
+  }catch(e){}
+}
+function startPolling(){ if(pollTimer) clearInterval(pollTimer); pollTimer=setInterval(poll,1000); }
+function stopPolling(){ if(pollTimer) clearInterval(pollTimer); pollTimer=null; }
+function render(){
+  const app=document.getElementById('app');
+  if(!state){ renderLogin(); return; }
+  const exam=state.exam||{};
+  const sub=state.current_subject;
+  const phase=exam.phase;
+  document.getElementById('headerInfo').textContent=`${onlineStatus}｜${exam.title||exam.name||''}｜${state.candidate?.name||''}｜座位 ${state.candidate?.seat||'-'}`;
+  if(phase==='created'){
+    app.innerHTML=`<div class="center card"><h2>考试尚未准备</h2><div class="info">请等待管理员完成“准备考试”。</div></div>`;
+    return;
+  }
+  if(phase==='prepared'){
+    if(!infoConfirmed){
+      app.innerHTML=`<div class="center card"><h2>考生信息确认</h2><div class="info">考试：${esc(exam.title||exam.name||'')}</div><div class="info">考生：${esc(state.candidate?.name||'')}</div><div class="info">座位号/机号：${esc(state.candidate?.seat||'-')}</div><div style="text-align:left;margin-top:14px"><strong>请确认：</strong><ul><li>准考证号与本人一致</li><li>座位号与考试机一致</li><li>已阅读考试须知和机考操作说明</li></ul></div><div style="margin-top:14px"><button class="big" onclick="confirmInfo()">我已确认，进入等待</button></div></div>`;
+      return;
+    }
+    app.innerHTML=`<div class="center card"><h2>考试已准备，等待开始</h2><div class="info">${esc(exam.title||exam.name||'')}</div><div class="info">考生：${esc(state.candidate?.name||'')}，座位号：${esc(state.candidate?.seat||'-')}</div><div class="info">请等待管理员点击“开始考试”。</div></div>`;
+    return;
+  }
+  if(phase==='ended'){
+    stopPolling();
+    app.innerHTML=`<div class="center card"><h2>考试结束</h2><div class="info">本场考试所有科目已完成，感谢作答。</div></div>`;
+    return;
+  }
+  if(phase==='guide'){
+    const time=state.time_left??0;
+    app.innerHTML=`
+      <div class="layout">
+        <div class="main">
+          <div class="card">
+            <h2>科目引导：${esc(sub?.name||'')}</h2>
+            <div class="info">请认真阅读考试引导，完成引导后可等待系统自动进入答题。</div>
+            <div class="info">本引导倒计时以后端为准，剩余 <span class="timer">${Math.floor(time/60)}:${String(time%60).padStart(2,'0')}</span></div>
+            <div class="actions">
+              <button onclick="completeGuide()">✅ 我已阅读引导</button>
+            </div>
+            <div id="msg"></div>
+          </div>
+        </div>
+        <div class="sidebar">
+          <h3>状态</h3>
+          <div>模式：${state.mode==='simulation'?'模拟':'标准'}</div>
+          <div>引导倒计时：${Math.floor(time/60)}:${String(time%60).padStart(2,'0')}</div>
+          ${state.guide_completed?'<div class="badge">引导已完成</div>':''}
+        </div>
+      </div>`;
+    return;
+  }
+  // answering
+  const time=state.time_left??0;
+  const questions=state.questions||[];
+  if (state.can_enter_answer === false) {
+    app.innerHTML=`
+      <div class="layout">
+        <div class="main">
+          <div class="card">
+            <h2>引导未完成，当前科目已开始计时</h2>
+            <div class="info">请等待下一轮或联系监考老师；本场考试倒计时仍由后端控制。</div>
+            <div class="timer">${Math.floor(time/60)}:${String(time%60).padStart(2,'0')}</div>
+          </div>
+        </div>
+        <div class="sidebar"><h3>状态</h3><div>未完成引导</div></div>
+      </div>`;
+    return;
+  }
+  const answers=state.answers||{};
+  const qlist=questions.map((q,i)=>{
+    const val=answers[q.id];
+    const opts=(q.options||[]).map(o=>{
+      const checked=Array.isArray(val)?val.includes(o.id):val===o.id;
+      return `<label class="option"><input type="${q.type==='mc'?'checkbox':'radio'}" name="q_${esc(q.id)}" value="${esc(o.id)}" ${checked?'checked':''} onchange="saveAnswer('${esc(q.id)}',this)"> ${esc(o.description)}</label>`;
+    }).join('');
+    return `<div class="question"><h3>${i+1}. ${esc(q.stem)}</h3>${opts}</div>`;
+  }).join('');
+  app.innerHTML=`
+    <div class="layout">
+      <div class="main">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2 style="margin:0">${esc(sub?.name||'')} 答题中</h2>
+            <div class="timer">${Math.floor(time/60)}:${String(time%60).padStart(2,'0')}</div>
+          </div>
+          <div class="info">倒计时由后端控制，时间到会自动收卷并进入下一环节。</div>
+        </div>
+        ${questions.length?qlist:'<div class="card">本科目暂无试题</div>'}
+        <div class="actions">
+          ${sub?.allow_early_submit?`<button class="warning" onclick="earlySubmit()">提前交卷</button>`:''}
+        </div>
+      </div>
+      <div class="sidebar">
+        <h3>答题卡</h3>
+        <div>共 ${questions.length} 题</div>
+        <div style="font-size:12px;margin-top:8px">
+          ${questions.map((q,i)=>`<span style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;border:1px solid #cbd5e1;border-radius:6px;margin:2px;${answers[q.id]?'background:#2563eb;color:#fff':''}">${i+1}</span>`).join('')}
+        </div>
+        <div style="margin-top:12px" class="info">左侧为答题区，右侧为答题卡。</div>
+      </div>
+    </div>`;
+}
+async function saveAnswer(qid, input){
+  const name='q_'+qid;
+  const vals=[...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value);
+  const answer=vals.length?vals:null;
+  if(answer) await req('/exam-client/answer','POST',{ticket:currentTicket,answers:{[qid]:answer}});
+}
+async function completeGuide(){
+  const res=await req('/exam-client/guide-complete','POST',{ticket:currentTicket});
+  document.getElementById('msg').textContent=res.ok?'已记录完成引导':'';
+  await poll();
+}
+async function earlySubmit(){
+  if(!confirm('确定提前交卷当前科目？')) return;
+  const res=await req('/exam-client/early-submit','POST',{ticket:currentTicket});
+  if(res.ok){ state=res.state; render(); } else alert(res.message||'无法提前交卷');
+}
+if(currentTicket){
+  (async()=>{ await loginTicket(currentTicket); if(!state) renderLogin(); })();
+}else{
+  renderLogin();
+}
+</script>
+</body>
+</html>

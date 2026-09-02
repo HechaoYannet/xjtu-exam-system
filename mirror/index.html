@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html><head>
+<base href="/client/"/>
+<meta charset="utf-8"/>
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+<meta content="width = device-width, viewport-fit=cover, initial-scale = 1.0, minimum-scale = 1, maximum-scale = 1, user-scalable = no" name="viewport"/>
+<meta content="joytest" name="apple-mobile-web-app-title"/>
+<meta content="yes" name="mobile-web-app-capablee"/>
+<meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="notranslate" name="google"/>
+<title>joytest</title>
+<link href="/client/assets/imgs/app.icns" rel="apple-touch-icon"/>
+<link href="/client/assets/imgs/app.icns" rel="apple-touch-icon" sizes="76x76"/>
+<link href="/client/assets/imgs/app.icns" rel="apple-touch-icon" sizes="120x120"/>
+<link href="/client/assets/imgs/app.icns" rel="apple-touch-icon" sizes="152x152"/>
+<link href="/client/assets/imgs/loading.gif" rel="apple-touch-startup-image"/>
+<link href="/client/assets/imgs/loading.gif" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)" rel="apple-touch-startup-image"/>
+<link href="/client/assets/imgs/loading.gif" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)" rel="apple-touch-startup-image"/>
+<link href="/client/favicon.ico" rel="icon" type="image/x-icon"/>
+<style media="screen" type="text/css">
+      body {
+        overflow: hidden;
+      }
+      .app-loading {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      .app-loading img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+<style>html,body{margin:0;padding:0;background:#ddd;overflow:hidden}@charset "UTF-8";:root{--blue:#007bff;--indigo:#6610f2;--purple:#6f42c1;--pink:#e83e8c;--red:#dc3545;--orange:#fd7e14;--yellow:#ffc107;--green:#28a745;--teal:#20c997;--cyan:#17a2b8;--white:#fff;--gray:#6c757d;--gray-dark:#343a40;--primary:#007bff;--secondary:#6c757d;--success:#28a745;--info:#17a2b8;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--dark:#343a40;--breakpoint-xs:0;--breakpoint-sm:576px;--breakpoint-md:768px;--breakpoint-lg:992px;--breakpoint-xl:1200px;--font-family-sans-serif:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-monospace:SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}*,*:before,*:after{box-sizing:border-box}html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,Liberation Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;text-align:left;background-color:#fff}img{vertical-align:middle;border-style:none}@media print{*,*:before,*:after{text-shadow:none!important;box-shadow:none!important}img{page-break-inside:avoid}@page{size:a3}body{min-width:992px!important}}body{--blue:#3d8ef8;--indigo:#564ab1;--purple:#6f42c1;--pink:#e83e8c;--red:#fb4d53;--orange:#f1734f;--yellow:#f1b44c;--green:#11c46e;--teal:#008080;--cyan:#0db4d6;--rose:#ffd0ff;--lblue:#add8e6;--lchiffon:#fffacd;--white:#fff;--gray:#7c8a96;--gray-dark:#343a40;--primary:#3d8ef8;--success:#11c46e;--info:#0db4d6;--warning:#f1b44c;--danger:#fb4d53;--light:#eff2f7;--lighter:#f5f5f5;--dark:#343a40;--darker:#212529;--black:#000;--breakpoint-xs:0;--breakpoint-sm:576px;--breakpoint-md:768px;--breakpoint-lg:992px;--breakpoint-xl:1200px;--font-family-sans-serif:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-monospace:SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--foreground:var(--darker);--background:var(--white);--secondary:#dbdbdb;--secondary-complement:var(--darker);--hr-border:1px solid var(--black);--table-border-color:var(--black);--well-bg:#f5f5f5;--well-border:1px solid #e3e3e3;--well-box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.6;margin:0;font-family:var(--font-family-sans-serif);color:var(--foreground);background-color:var(--background);font-size:var(--bs-body-font-size);line-height:var(--bs-body-line-height);font-weight:var(--bs-body-font-weight);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}html{font-size:16px}body{line-height:1.6}body{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{width:100vw;height:100vh;overflow:hidden;font-family:Microsoft YaHei,Helvetica,Tahoma,Arial,Hiragino Sans GB,Hiragino Sans GB W3,STXihei,STHeiti,Heiti,SimSun,sans-serif}img{-webkit-user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;user-drag:none}body{box-shadow:10px 10px 5px #00000080}:root{--ML__static-fonts:true}*,:before,:after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(147, 197, 253, .5);--tw-ring-offset-shadow:0 0 rgba(0,0,0,0);--tw-ring-shadow:0 0 rgba(0,0,0,0);--tw-shadow:0 0 rgba(0,0,0,0);--tw-shadow-colored:0 0 rgba(0,0,0,0);--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }*{scrollbar-color:initial;scrollbar-width:initial}</style><link href="/client/styles.6a0bebae203db4c5.css" media="print" onload="this.onload=null; this.media='all'" rel="stylesheet"/><noscript><link href="/client/styles.6a0bebae203db4c5.css" media="print" onload="this.onload=null; this.media='all'" rel="stylesheet"/></noscript><script type="text/javascript">window.ASSET_PATH ="/client/"</script><script type="text/javascript">
+if (!document.documentMode && location.hostname.indexOf("demo") >= 0) {
+  var _hmt = _hmt || [];
+  var siteid = "";
+  if (location.hostname === "demo.joytest.org.cn") {
+    siteid = "4bde8ceae8682d9972510e46582513f1";
+  } else if (location.hostname === "cpademo.joytest.org.cn") {
+    siteid = "a208e75483ab4cf0985e300bc81881ab";
+  }
+  (function() {
+    if (!siteid) return;
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?" + siteid;
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+}
+</script></head>
+<body class="joy-app" oncontextmenu="return false;" ondragstart="return false;" ondrop="return false;">
+<app-root>
+<div class="app-loading">
+<img alt="loading" src="/client/assets/imgs/app-loading.gif"/>
+</div>
+</app-root>
+<script src="/client/assets/js/annotator/jquery-1.11.1.js?v=20260526" type="text/javascript"></script>
+<script id="lib-wgxpath" src="/client/assets/js/annotator/wgxpath.install.js?v=20260526" type="text/javascript"></script>
+<script id="lib-gettext" src="/client/assets/js/annotator/gettext.js?v=20260526" type="text/javascript"></script>
+<script id="lib-annFull" src="/client/assets/js/annotator/annotator-full.min.js?v=20260526" type="text/javascript"></script>
+<script id="lib-annOK" src="/client/assets/js/annotator/annotorious.okfn.js?v=20260526" type="text/javascript"></script>
+<script type="text/javascript">
+      var body = document.getElementsByTagName("body")[0];
+      body.addEventListener(
+        "load",
+        function (event) {
+          if (event.target.nodeName === "SCRIPT") {
+            console.log(
+              "Script loaded: " + event.target.getAttribute("src"),
+              "  $: " + (typeof $ === "undefined" ? "undefined" : !!$)
+            );
+
+            // 如果jquery加载不成功，直接reload
+            if (typeof $ === "undefined") {
+              window.location.reload();
+            }
+          }
+        },
+        true
+      );
+
+      window.onload = function () {
+        wgxpath.install();
+      };
+      window["__Zone_disable_IE_check"] = true; // fix ie11 报错
+    </script>
+<script src="/client/runtime.39bc6e824872697d.js" type="module"></script><script src="/client/polyfills.6a5bac4e1539c87f.js" type="module"></script><script defer="" src="/client/scripts.7a7184ede54fefde.js"></script><script src="/client/main.eba826630a0f652a.js" type="module"></script>
+</body></html>

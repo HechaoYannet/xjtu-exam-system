@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Simple Calculator" />
+
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width, height=device-height"
+    />
+    <meta name="HandleFriendly" content="true" />
+    <meta name="theme-color" content="#eee" />
+
+    <meta
+      name="description"
+      content="A simple calculator with better design than Apple's default calculator."
+    />
+    <title>Calculator</title>
+    <script defer>
+      window.themes = {
+        dark: '#101010',
+        light: '#eee',
+        classic: '#d5594a',
+      };
+
+      window.setTheme = function (theme) {
+        localStorage.setItem('theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', window.themes[theme]);
+      };
+
+      window.setAutoTheme = function () {
+        const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (darkThemeMq.matches) {
+          localStorage.setItem('theme', 'dark');
+          window.setTheme('dark');
+        } else {
+          localStorage.setItem('theme', 'light');
+          window.setTheme('light');
+        }
+      };
+
+      const preferredTheme = localStorage.getItem('preferredTheme');
+
+      if (!preferredTheme || preferredTheme === 'auto') {
+        localStorage.setItem('preferredTheme', 'auto');
+        window.setAutoTheme();
+      } else {
+        window.setTheme(preferredTheme);
+      }
+    </script>
+    <script type="module" crossorigin src="./assets/index-640c4c38.js"></script>
+    <link rel="stylesheet" href="./assets/index-46c1648b.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <div class="calculator-pwa_install-prompt-container" style="display: none">
+      <div class="calculator-pwa_install-prompt-backdrop"></div>
+      <h3 style="color: var(--accent)">Install Calculator</h3>
+      <p style="color: var(--accent); line-height: 1.6; margin-bottom: 10px">
+        Install this app as a progressive web app on your device to have the
+        best experience!
+      </p>
+      <br />
+      <div class="calculator-pwa_install-prompt-btns">
+        <button
+          class="calculator-pwa_install-prompt-btn-cancel"
+          onclick="onCancelInstall()"
+        >
+          Cancel
+        </button>
+        <button
+          class="calculator-pwa_install-prompt-btn-install"
+          onclick="onInstallClick()"
+        >
+          Install
+        </button>
+      </div>
+    </div>
+    <script defer>
+      let deferredPrompt = null;
+      function getPWADisplayMode() {
+        const isStandalone = window.matchMedia(
+          '(display-mode: standalone)'
+        ).matches;
+        if (document.referrer.startsWith('android-app://')) {
+          return 'twa';
+        } else if (navigator.standalone || isStandalone) {
+          return 'standalone';
+        }
+        return 'browser';
+      }
+      function onInstallClick() {
+        document.querySelector(
+          '.calculator-pwa_install-prompt-container'
+        ).style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((data) => {
+          localStorage.setItem('pwaInstallation', data.outcome);
+        });
+      }
+      function onCancelInstall() {
+        localStorage.setItem('pwaInstallation', 'dismissed');
+        document.querySelector(
+          '.calculator-pwa_install-prompt-container'
+        ).style.display = 'none';
+      }
+      // 与父窗口交互
+      document.addEventListener("click", docClick, false);
+      
+      function docClick(e) {
+        const parentDoc = parent.document;
+        const wrapper = parentDoc.querySelector(".wrap-calculator-cont");
+        if (parentDoc && wrapper){
+          wrapper.click();
+        }
+      }
+    </script>
+  </body>
+</html>

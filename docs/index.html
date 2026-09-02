@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本地考试后端管理系统 - GitHub Pages</title>
+<style>
+:root { --primary:#2563eb; --bg:#f8fafc; --card:#fff; --text:#0f172a; --muted:#64748b; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+header { background:linear-gradient(135deg,#1e3a8a,#2563eb); color:#fff; padding:60px 20px; text-align:center; }
+header h1 { margin:0 0 10px; font-size:32px; }
+header p { opacity:.9; max-width:760px; margin:0 auto; }
+main { max-width:1000px; margin:0 auto; padding:30px 20px; }
+.card { background:var(--card); border:1px solid #e2e8f0; border-radius:12px; padding:20px; margin-bottom:18px; }
+h2 { margin-top:0; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+.pill { display:inline-block; background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:999px; font-size:13px; margin:2px; }
+code { background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:13px; }
+pre { background:#0f172a; color:#e2e8f0; padding:14px; border-radius:8px; overflow:auto; font-size:13px; }
+footer { text-align:center; color:var(--muted); padding:30px 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>本地考试后端管理系统</h1>
+  <p>基于本地考试机前端镜像的轻量级、无数据库考试管理平台。支持多科目考试生命周期、模拟/标准模式、多人多机考试机客户端。</p>
+</header>
+<main>
+  <div class="grid">
+    <div class="card"><h2>核心能力</h2><p>考生、试题、考试、科目统一管理；以考试为单位组织试题和考生。</p><span class="pill">无数据库</span><span class="pill">明文 JSON</span><span class="pill">本地部署</span></div>
+    <div class="card"><h2>考试生命周期</h2><p>创建考试 → 添加科目/试题 → 分配考生 → 准备考试 → 开始考试 → 自动收卷 → 下一科目引导 → 考试结束。</p><span class="pill">后端权威计时</span></div>
+    <div class="card"><h2>系统模式</h2><p>模拟模式支持多场并发、自由登录；标准模式由后台统一开考信号控制。</p><span class="pill">模拟模式</span><span class="pill">标准模式</span></div>
+    <div class="card"><h2>考试机客户端</h2><p>支持多台机器同时登录，准考证号独立匹配，答题记录按考生隔离。</p><span class="pill">右侧答题卡</span><span class="pill">后端倒计时</span></div>
+  </div>
+
+  <div class="card">
+    <h2>快速开始</h2>
+    <pre><code># 安装后启动
+python exam_backend.py server --port 8000
+
+# 管理后台
+http://localhost:8000/admin
+
+# 考试机客户端
+http://localhost:8000/exam-client
+
+# 导入示例数据
+python exam_backend.py seed-demo</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>目录</h2>
+    <ul>
+      <li><code>exam_backend.py</code>：后端、管理 API、管理后台、CLI</li>
+      <li><code>exam_client.html</code>：可交付考试机客户端</li>
+      <li><code>mirror/</code>：本地考试机前端镜像资源</li>
+      <li><code>docs/</code>：GitHub Pages 静态站点</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>说明</h2>
+    <p>本项目为本地考试系统后端实现，无数据库、无外部服务依赖。GitHub Pages 仅用于项目说明文档展示；实际考试运行需在本机或内网启动 Python 后端。</p>
+  </div>
+</main>
+<footer>本地考试后端管理系统 · GitHub Pages</footer>
+</body>
+</html>
