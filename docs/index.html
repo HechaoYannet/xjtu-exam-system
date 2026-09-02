@@ -31,7 +31,7 @@ footer { text-align:center; color:var(--muted); padding:30px 20px; }
     <div class="card"><h2>核心能力</h2><p>考生、试题、考试、科目统一管理；以考试为单位组织试题和考生。</p><span class="pill">无数据库</span><span class="pill">明文 JSON</span><span class="pill">本地部署</span></div>
     <div class="card"><h2>考试生命周期</h2><p>创建考试 → 添加科目/试题 → 分配考生 → 准备考试 → 开始考试 → 自动收卷 → 下一科目引导 → 考试结束。</p><span class="pill">后端权威计时</span></div>
     <div class="card"><h2>系统模式</h2><p>模拟模式支持多场并发、自由登录；标准模式由后台统一开考信号控制。</p><span class="pill">模拟模式</span><span class="pill">标准模式</span></div>
-    <div class="card"><h2>考试机客户端</h2><p>支持多台机器同时登录，准考证号独立匹配，答题记录按考生隔离。</p><span class="pill">右侧答题卡</span><span class="pill">后端倒计时</span></div>
+    <div class="card"><h2>考试机客户端</h2><p>正式客户端基于仓库内 <code>mirror/</code> 镜像前端，多台机器独立登录，答题记录按考生隔离。</p><span class="pill">镜像前端</span><span class="pill">后端倒计时</span></div>
   </div>
 
   <div class="card">
@@ -42,7 +42,10 @@ python exam_backend.py server --port 8000
 # 管理后台
 http://localhost:8000/admin
 
-# 考试机客户端
+# 正式考试机客户端（镜像前端）
+http://localhost:8000/
+
+# 轻量调试客户端（非正式，仅调试用）
 http://localhost:8000/exam-client
 
 # 导入示例数据
@@ -53,7 +56,7 @@ python exam_backend.py seed-demo</code></pre>
     <h2>目录</h2>
     <ul>
       <li><code>exam_backend.py</code>：后端、管理 API、管理后台、CLI</li>
-      <li><code>exam_client.html</code>：可交付考试机客户端</li>
+      <li><code>exam_client.html</code>：轻量调试客户端/备用演示页（非正式客户端）</li>
       <li><code>mirror/</code>：本地考试机前端镜像资源</li>
       <li><code>docs/</code>：GitHub Pages 静态站点</li>
     </ul>
