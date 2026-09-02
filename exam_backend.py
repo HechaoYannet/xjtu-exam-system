@@ -1475,6 +1475,7 @@ let autoRefreshTimer = null;
 let modalCallback = null;
 
 // ---------- 基础工具 ----------
+function newId(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,10); }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1915,6 +1916,7 @@ async function prepareExam(id) {
 }
 function addExam() {
   openModal('创建考试', `
+    <div class="help"><strong>创建流程</strong>先填写考试基本信息；如需直接配置科目，可在下方填写“初始科目”，之后仍可在考试列表继续添加科目。</div>
     <div class="form-group"><label>考试名称 *</label><input id="e_name" placeholder="例如 2026年期中考试"></div>
     <div class="form-row">
       <div class="form-group"><label>时长（分钟）</label><input id="e_duration" type="number" value="20" min="1"></div>
@@ -1922,11 +1924,32 @@ function addExam() {
     </div>
     <div class="form-group"><label><input type="checkbox" id="e_auto" checked> 开启自动开考</label><div class="hint">开启后，考试机输入准考证号即可自动开始该考生的考试。</div></div>
     <div class="form-group"><label>考试说明/通知</label><textarea id="e_notice" rows="3" placeholder="可填写考试须知 HTML 或纯文本"></textarea></div>
+    <hr>
+    <div class="card-title">初始科目（可选）</div>
+    <div class="form-row">
+      <div class="form-group"><label>科目名称</label><input id="e_sub_name" placeholder="例如 科目一"></div>
+      <div class="form-group"><label>答题时长（分钟）</label><input id="e_sub_duration" type="number" value="10"></div>
+    </div>
+    <div class="form-group"><label>试题ID（逗号分隔）</label><input id="e_sub_questions" placeholder="q1,q2,q3"></div>
+    <div class="form-group"><label><input type="checkbox" id="e_sub_early"> 允许该科目提前交卷</label></div>
   `, async () => {
+    const subjects = [];
+    const subName = val('e_sub_name');
+    const qids = val('e_sub_questions').split(',').map(s => s.trim()).filter(Boolean);
+    if (subName || qids.length) {
+      subjects.push({
+        id: newId('subj'),
+        name: subName || '科目一',
+        duration: parseInt(val('e_sub_duration') || 10) * 60,
+        guide_duration: 600,
+        question_ids: qids,
+        allow_early_submit: document.getElementById('e_sub_early').checked
+      });
+    }
     await api('/exams', 'POST', {
       name: val('e_name'), duration_minutes: parseInt(val('e_duration') || 20),
       mode: val('e_mode'), auto_start: document.getElementById('e_auto').checked,
-      notice: val('e_notice')
+      notice: val('e_notice'), subjects
     });
     toast('考试已创建', 'success');
     await renderExams();
